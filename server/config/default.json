@@ -1,0 +1,4 @@
+{
+    "jwtPrivateKey": "abc123",
+    "db": "mongodb://localhost/foodviraam"
+}

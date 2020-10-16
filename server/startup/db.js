@@ -7,6 +7,7 @@ module.exports = function () {
         .connect(db, {
             useUnifiedTopology: true,
             useNewUrlParser: true,
+            useCreateIndex: true,
         })
         .then(() => {
             console.log(`Connected to Database:  ${db}`);

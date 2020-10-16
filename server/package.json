@@ -12,5 +12,10 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
     "mongoose": "^5.10.9"
-  }
+  },
+  "scripts": {
+    "test": "jest --watchAll --verbose --runInBand --coverage",
+    "start": "node index.js",
+    "start-dev": "nodemon index.js"
+}
 }

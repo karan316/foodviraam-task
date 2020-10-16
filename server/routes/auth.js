@@ -6,36 +6,38 @@ const Joi = require("joi");
 const { User } = require("../models/user");
 
 router.post("/", async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) {
-        res.status(400).send(error.details[0].message);
-        return;
+    try {
+        const { error } = validate(req.body);
+        if (error) {
+            res.status(400).send(error.details[0].message);
+            return;
+        }
+
+        let user = await User.findOne({ email: req.body.email });
+        if (!user) return res.status(400).send("Invalid email and password.");
+
+        const validPassword = await bcrypt.compare(
+            req.body.password,
+            user.password
+        );
+        if (!validPassword)
+            return res.status(400).send("Invalid email or password.");
+
+        const token = user.generateAuthToken();
+        res.send(token);
+    } catch (error) {
+        console.error(error);
     }
-
-    // if the user already exists in the database
-    let user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(400).send("Invalid email and password.");
-
-    const validPassword = await bcrypt.compare(
-        req.body.password,
-        user.password
-    );
-    // if not a valid password
-    if (!validPassword)
-        return res.status(400).send("Invalid email or password.");
-
-    const token = user.generateAuthToken();
-    // valid password
-    res.send(token);
+    
 });
 
 function validate(req) {
-    const schema = {
+    const schema = Joi.object({
         email: Joi.string().min(5).max(100).required().email(),
         password: Joi.string().required().min(5).max(255),
-    };
+    });
 
-    return Joi.validate(req, schema);
+    return schema.validate(req);
 }
 
 module.exports = router;

@@ -32,11 +32,9 @@ const userSchema = new mongoose.Schema({
     isAdmin: Boolean,
 });
 
-// user object will have this method
 userSchema.methods.generateAuthToken = function () {
-    // the first parameter is the payload
     const token = jwt.sign(
-        { _id: this._id, name: this.name, isAdmin: this.isAdmin },
+        { _id: this._id, name: this.name, email: this.email, age: this.age },
         config.get("jwtPrivateKey")
     );
     return token;
@@ -45,14 +43,14 @@ userSchema.methods.generateAuthToken = function () {
 const User = mongoose.model("User", userSchema);
 
 function validateUser(user) {
-    const schema = {
+    const schema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
         age: Joi.string().min(1).max(3).required(),
         email: Joi.string().min(5).max(100).required().email(),
         password: Joi.string().required().min(5).max(255),
-    };
+    });
 
-    return Joi.validate(user, schema);
+    return schema.validate(user);
 }
 
 exports.User = User;
