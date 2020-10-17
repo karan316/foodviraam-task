@@ -1,13 +1,13 @@
 import React from 'react'
 
-const Profile = ({user}) => {
+const Profile = () => {
     return (
         <div>
             <div className="text-4xl bold">
-               Hello {user.name}!
+               Hello dummy!
             </div>
             <div className="text-2xl">
-               You are {user.age} years old.
+               You are dummy years old.
             </div> 
         </div>
     )
