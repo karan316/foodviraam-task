@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from './Link';
-const FormContainer = ({children, title, alternateText, alternateLink}) => {
+const FormContainer = ({children, title, alternateText, alternateLink, handleSubmit, field, ...props}) => {
     return (
         <div className="container mx-auto absolute max-w-full h-full w-full">
             <div className="flex content-center items-center justify-center h-full">
@@ -15,7 +15,7 @@ const FormContainer = ({children, title, alternateText, alternateLink}) => {
                     <hr className="mt-6 border-b-1 border-gray-400" />
                   </div>
                   <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
-                    <form>
+                    <form onSubmit={handleSubmit} {...field} {...props}>
                       {children}
                     </form>
                   </div>
