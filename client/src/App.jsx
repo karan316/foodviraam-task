@@ -1,37 +1,50 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Login from './components/Login';
 import Profile from "./components/Profile";
-import { Redirect, Route, Switch } from "react-router-dom";
+import ChangePassword from "./components/ChangePassword";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import { Route, Switch } from "react-router-dom";
 import Register from './components/Register';
+import auth from "./services/authService";
+
 function App() {
-  const [user, setUser] = useState({name: "", age: "", email: "", password: ""})
-  const loggedIn = false;
-  const handleSubmit = () => {
-    // setUser({
-    //   name: "Karan",
-    //   age: "20",
-    //   email: "hejmadi@gmal.com",
-    //   password: "cocopuffs"
-    // });
-    console.log("form submitted")
-    return <Redirect to="/profile" />
-  }
+  const [user, setUser] = useState({name: "", age: "", email: "", password: ""});
+
+  useEffect(() => {
+    const currentUser = auth.getCurrentUser();
+    if(currentUser) {
+      setUser({
+        _id: currentUser._id,
+        name: currentUser.name,
+        age: currentUser.age,
+        email: currentUser.email,
+        password: currentUser.password
+      });
+    }
+    console.log(currentUser);
+  }, []);
+
   return (
     <div className="App">
       <Switch>
-      <Route exact path="/">
-          {loggedIn ? <Redirect from="/" to="/profile" /> : <Redirect from="/" to="/login" />}
-        </Route>
         <Route path="/login">
-          <Login onSubmit={handleSubmit}/>
+          <Login />
         </Route>
         <Route path="/register">
-          <Register onSubmit={handleSubmit}/>
+          <Register />
         </Route>
-        <Route to="/profile">
-          <Profile user={user} />
-        </Route>
-        
+        <ProtectedRoute
+          path="/profile"
+          render={props => <Profile {...props} user={user} />}
+        />
+        <ProtectedRoute
+          path="/change-password"
+          render={props => <ChangePassword {...props} user={user} />}
+        />
+        <ProtectedRoute
+          path="/"
+          render={props => <Profile {...props} user={user} />}
+        />
       </Switch>
     </div>
   );

@@ -4,11 +4,14 @@ import Button from './common/Button';
 import Input from './common/Input';
 import FormContainer from "./common/FormContainer";
 import * as yup from "yup";
+import * as userService from "../services/userService";
+import auth from "../services/authService";
 import { Formik, ErrorMessage } from "formik";
 
 const validationSchema = yup.object({
   name: yup.string().required("Name is required"),
   email: yup.string().email().required("Email is required."),
+  age: yup.string().required("Age is required."),
   password: yup.string().required("Password is required.").min(5, "Password should be minimum 5 characters.").max(30, "Password should be maximum 50 characters."),
 });
 
@@ -23,8 +26,14 @@ const Register = () => {
         password: '',
       }}
       validationSchema={validationSchema}
-      onSubmit={(values) => {
-        console.log("Form submitted: ",values);
+      onSubmit={ async (values) => {
+        try {
+          const response = await userService.register(values);
+          auth.loginWithJwt(response.headers["x-auth-token"]); 
+          window.location = "/profile";
+      } catch (errors) {
+          console.error(errors);
+      }
         history.push("/profile");
       }}
     >

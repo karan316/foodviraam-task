@@ -1,10 +1,10 @@
 import React from 'react';
-import { useHistory } from "react-router-dom";
 import Button from './common/Button';
 import Input from './common/Input';
 import FormContainer from "./common/FormContainer";
 import * as yup from "yup";
 import { Formik, ErrorMessage } from "formik";
+import auth from "../services/authService";
 
 const validationSchema = yup.object({
   email: yup.string().email().required("Email is required."),
@@ -12,7 +12,6 @@ const validationSchema = yup.object({
 });
 
 const Login = () => {
-  const history = useHistory();
     return (
     <Formik
       initialValues={{
@@ -20,9 +19,14 @@ const Login = () => {
         password: '',
       }}
       validationSchema={validationSchema}
-      onSubmit={(values) => {
-        console.log("Form submitted: ",values);
-        history.push("/profile");
+      onSubmit={async (values) => {
+        try {
+          console.log("Form submitted: ",values);
+          await auth.login(values.email, values.password);
+          window.location = "/profile";
+        } catch (error) {
+          console.error(error);
+        }
       }}
     >
     {({isSubmitting, handleSubmit, handleBlur, handleChange}) => (
